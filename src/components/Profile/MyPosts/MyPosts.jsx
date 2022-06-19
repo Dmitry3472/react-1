@@ -4,12 +4,17 @@ import Post from "./Post/Post.jsx";
 
 const MyPosts = () => {
   return (
-    <div>
+    <div className={s.postsBlock}>
+      <h3>My posts</h3>
       <div>
-        <textarea></textarea>
-        <button>Add post</button>
+        <div>
+          <textarea></textarea>
+        </div>
+        <div>
+          <button>Add post</button>
+        </div>
       </div>
-      <div>
+      <div className={s.posts}>
         <Post message="Hi, first message" likeCounts="15" />
         <Post message="second post" likecCounts="22" />
         <Post message="3" likeCounts="33" />
