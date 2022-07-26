@@ -1,61 +1,30 @@
 import React from "react";
 import styles from "./users.module.css";
+import * as axios from "axios";
+import userPhoto from "../../assets/images/no-photo.jpg";
 
 let Users = (props) => {
-  debugger;
-  if (props.users.length === 0) {
-    debugger;
-    props.setUsers([
-      {
-        id: 1,
-        photoUrl: "https://klike.net/uploads/posts/2020-05/1590914808_5.jpg",
-        followed: false,
-        fullname: "Dmitry1",
-        status: "My page1!",
-        location: { city: "Ufa", country: "Russia" },
-      },
-      {
-        id: 2,
-        photoUrl: "https://klike.net/uploads/posts/2020-05/1590914808_5.jpg",
-        followed: true,
-        fullname: "Dmitry2",
-        status: "My page2!",
-        location: { city: "Moscow", country: "Georgia" },
-      },
-      {
-        id: 3,
-        photoUrl: "https://klike.net/uploads/posts/2020-05/1590914808_5.jpg",
-        followed: true,
-        fullname: "Dmitry3",
-        status: "My page3!",
-        location: { city: "Kiev", country: "Latvia" },
-      },
-      {
-        id: 4,
-        photoUrl: "https://klike.net/uploads/posts/2020-05/1590914808_5.jpg",
-        followed: false,
-        fullname: "Dmitry4",
-        status: "My page4!",
-        location: { city: "Minsk", country: "Belarus" },
-      },
-      {
-        id: 5,
-        photoUrl: "https://klike.net/uploads/posts/2020-05/1590914808_5.jpg",
-        followed: true,
-        fullname: "Dmitry5",
-        status: "My page5!",
-        location: { city: "Sochi", country: "Ukrain" },
-      },
-    ]);
-  }
-  debugger;
+  let getUsers = () => {
+    if (props.users.length === 0) {
+      axios
+        .get("https://social-network.samuraijs.com/api/1.0/users")
+        .then((response) => {
+          props.setUsers(response.data.items);
+        });
+    }
+  };
+
   return (
     <div>
+      <button onClick={getUsers}>Get Users!</button>
       {props.users.map((u) => (
         <div key={u.Id}>
           <span>
             <div>
-              <img src={u.photoUrl} className={styles.userPhoto} />
+              <img
+                src={u.photos.small != null ? u.photos.small : userPhoto}
+                className={styles.userPhoto}
+              />
             </div>
             <div>
               {u.followed ? (
@@ -67,12 +36,12 @@ let Users = (props) => {
           </span>
           <span>
             <span>
-              <div>{u.fullname}</div>
+              <div>{u.name}</div>
               <div>{u.status}</div>
             </span>
             <span>
-              <div>{u.location.country}</div>
-              <div>{u.location.city}</div>
+              <div>{"u.location.country"}</div>
+              <div>{"u.location.city"}</div>
             </span>
           </span>
         </div>
