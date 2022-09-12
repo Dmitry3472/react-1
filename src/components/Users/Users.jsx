@@ -1,78 +1,102 @@
 import React from "react";
 import styles from "./users.module.css";
+import userPhoto from "../../assets/images/no-photo.jpg";
+import { NavLink } from "react-router-dom";
+import * as axios from "axios";
 
 let Users = (props) => {
-  debugger;
-  if (props.users.length === 0) {
-    debugger;
-    props.setUsers([
-      {
-        id: 1,
-        photoUrl: "https://klike.net/uploads/posts/2020-05/1590914808_5.jpg",
-        followed: false,
-        fullname: "Dmitry1",
-        status: "My page1!",
-        location: { city: "Ufa", country: "Russia" },
-      },
-      {
-        id: 2,
-        photoUrl: "https://klike.net/uploads/posts/2020-05/1590914808_5.jpg",
-        followed: true,
-        fullname: "Dmitry2",
-        status: "My page2!",
-        location: { city: "Moscow", country: "Georgia" },
-      },
-      {
-        id: 3,
-        photoUrl: "https://klike.net/uploads/posts/2020-05/1590914808_5.jpg",
-        followed: true,
-        fullname: "Dmitry3",
-        status: "My page3!",
-        location: { city: "Kiev", country: "Latvia" },
-      },
-      {
-        id: 4,
-        photoUrl: "https://klike.net/uploads/posts/2020-05/1590914808_5.jpg",
-        followed: false,
-        fullname: "Dmitry4",
-        status: "My page4!",
-        location: { city: "Minsk", country: "Belarus" },
-      },
-      {
-        id: 5,
-        photoUrl: "https://klike.net/uploads/posts/2020-05/1590914808_5.jpg",
-        followed: true,
-        fullname: "Dmitry5",
-        status: "My page5!",
-        location: { city: "Sochi", country: "Ukrain" },
-      },
-    ]);
+  let pagesCount = Math.ceil(props.totalUsersCount / props.pageSize);
+  let pages = [];
+
+  for (let i = 1; i <= pagesCount; i++) {
+    pages.push(i);
   }
-  debugger;
+
   return (
     <div>
+      <div>
+        {pages.map((p) => {
+          return (
+            <span
+              className={props.currentPage === p && styles.selectedPage}
+              onClick={(e) => {
+                props.onPageChanged(p);
+              }}
+            >
+              {p}
+            </span>
+          );
+        })}
+      </div>
       {props.users.map((u) => (
         <div key={u.Id}>
           <span>
             <div>
-              <img src={u.photoUrl} className={styles.userPhoto} />
+              <NavLink to={"/profile/" + u.id}>
+                <img
+                  src={u.photos.small != null ? u.photos.small : userPhoto}
+                  className={styles.userPhoto}
+                />
+              </NavLink>
             </div>
             <div>
               {u.followed ? (
-                <button onClick={() => props.unfollow(u.id)}>Unfollow</button>
+                <button
+                  onClick={() => {
+                    axios
+                      .delete(
+                        `https://social-network.samuraijs.com/api/1.0/follow/${u.id}`,
+
+                        {
+                          withCredentials: true,
+                          headers: {
+                            "API-KEY": "3142c0ad-805e-42d3-b4f2-9ec9c96f4d8f",
+                          },
+                        }
+                      )
+                      .then((response) => {
+                        if (response.data.resultCode === 0) {
+                          props.unfollow(u.id);
+                        }
+                      });
+                  }}
+                >
+                  Unfollow
+                </button>
               ) : (
-                <button onClick={() => props.follow(u.id)}>Follow</button>
+                <button
+                  onClick={() => {
+                    axios
+                      .post(
+                        `https://social-network.samuraijs.com/api/1.0/follow/${u.id}`,
+                        {},
+                        {
+                          withCredentials: true,
+                          headers: {
+                            "API-KEY": "3142c0ad-805e-42d3-b4f2-9ec9c96f4d8f",
+                          },
+                        }
+                      )
+                      .then((response) => {
+                        if (response.data.resultCode === 0) {
+                          props.follow(u.id);
+                        }
+                      });
+                  }}
+                >
+                  Follow
+                </button>
               )}
             </div>
           </span>
           <span>
             <span>
-              <div>{u.fullname}</div>
+              <div>{u.name}</div>
               <div>{u.status}</div>
             </span>
             <span>
-              <div>{u.location.country}</div>
-              <div>{u.location.city}</div>
+              <div>{"u.location.country"}</div>
+              <div>{"u.location.city"}</div>
             </span>
           </span>
         </div>
